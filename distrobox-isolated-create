@@ -753,8 +753,11 @@ generate_create_command()
 
 	if [ "${privileged}" -eq 1 ]; then
 		result_command="${result_command}
-		    --env PRIVILEGED=1
 			--privileged"
+	else
+		# Required to mount new devpts inside the init script
+		result_command="${result_command}
+			--cap-add SYS_ADMIN,MKNOD"
 	fi
 
 	if [ "${unconfined}" -eq 1 ]; then

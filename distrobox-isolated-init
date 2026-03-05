@@ -1900,27 +1900,23 @@ EOF
 fi
 
 ###############################################################################
-if [ "${privileged}" -eq 1 ]; then
-    printf "distrobox: Setting up devpts mounts...\n"
-    # First we need to ensure we have a tty group to assign /dev/pts to
-    if ! grep -q tty /etc/group; then
-    	printf "%s" 'tty:x:5:' >> /etc/group
-    fi
-
-    # Instantiate a new /dev/pts mount, this will ensure pseudoterminals are container-scoped
-    # and make easier in case of initful containers to have a separate /dev/console
-    #
-    # Podman supports a mount option to do this at creation time, but we're doing it
-    # here to support also other container rmanagers which does not support that flag
-    mount -t devpts devpts -o noexec,nosuid,newinstance,ptmxmode=0666,mode=0620,gid=tty /dev/pts/
-    mount --bind /dev/pts/ptmx /dev/ptmx
-
-    # Change mount propagation to shared to make the environment more similar to a
-    # modern Linux system, e.g. with Systemd as PID 1.
-    mount --make-rshared /
-else
-    printf "distrobox: Skipping devpts mounts because unprivileged...\n"
+printf "distrobox: Setting up devpts mounts...\n"
+# First we need to ensure we have a tty group to assign /dev/pts to
+if ! grep -q tty /etc/group; then
+printf "%s" 'tty:x:5:' >> /etc/group
 fi
+
+# Instantiate a new /dev/pts mount, this will ensure pseudoterminals are container-scoped
+# and make easier in case of initful containers to have a separate /dev/console
+#
+# Podman supports a mount option to do this at creation time, but we're doing it
+# here to support also other container rmanagers which does not support that flag
+mount -t devpts devpts -o noexec,nosuid,newinstance,ptmxmode=0666,mode=0620,gid=tty /dev/pts/
+mount --bind /dev/pts/ptmx /dev/ptmx
+
+# Change mount propagation to shared to make the environment more similar to a
+# modern Linux system, e.g. with Systemd as PID 1.
+mount --make-rshared /
 ###############################################################################
 
 ###############################################################################
@@ -2739,6 +2735,7 @@ printf "distrobox: Setting up init system...\n"
 # the init system. If they're mounts, there might
 # be problems. Let's unmount them.
 for host_mount in ${HOST_MOUNTS_RO_INIT}; do
+	# TOREVIEW: It's a naive fix -w but I think it isn't a good solution to detect if it's tmpfs
 	if findmnt "${host_mount}" && [ ! -w "${host_mount}" ] > /dev/null; then umount "${host_mount}"; fi
 done
 
