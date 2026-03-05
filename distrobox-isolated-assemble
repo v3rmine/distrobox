@@ -412,7 +412,7 @@ run_distrobox()
 	if [ -n "${hostname}" ]; then
 		result_command="${result_command} --hostname $(sanitize_variable "${hostname}")"
 	fi
-	if [ -n "${overlay_home}" ]; then
+	if [ "${overlay_home}" != "-" ] && [ -n "${overlay_home}" ] && [ "${overlay_home}" -eq 1 ]; then
 		result_command="${result_command} --overlay-home"
 	elif [ "${overlay_home}" != "-" ]; then
 		result_command="${result_command} --overlay-home $(sanitize_variable "${overlay_home}")"
