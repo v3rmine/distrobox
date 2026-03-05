@@ -748,7 +748,6 @@ generate_create_command()
 	result_command="${result_command}
 		--hostname \"${container_hostname}\"
 		--name \"${container_name}\"
-		--security-opt no-new-privileges
 		--pids-limit=-1
 		--user root:root"
 
@@ -941,9 +940,6 @@ generate_create_command()
 	if [ "${unshare_journal}" -eq 0 ]; then
 		result_command="${result_command}
 			--volume /var/log/journal"
-	else
-		result_command="${result_command}
-			--mount type=tmpfs,target=/var/log/journal"
 	fi
 
 	# In some systems, for example using sysvinit, /dev/shm is a symlink

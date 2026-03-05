@@ -2739,7 +2739,7 @@ printf "distrobox: Setting up init system...\n"
 # the init system. If they're mounts, there might
 # be problems. Let's unmount them.
 for host_mount in ${HOST_MOUNTS_RO_INIT}; do
-	if findmnt "${host_mount}" > /dev/null; then umount "${host_mount}"; fi
+	if findmnt "${host_mount}" && [ ! -w "${host_mount}" ] > /dev/null; then umount "${host_mount}"; fi
 done
 
 # Remove symlinks
