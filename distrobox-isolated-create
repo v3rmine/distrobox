@@ -249,7 +249,7 @@ Options:
 				usage: --overlay-home <options>
 				where options are overlayfs options like "upperdir=<absolute path on host>,workdir=<absolute path on host>"
 	--privileged:		run container with ALL Linux kernel capabilities (dangerous)
-	--unconfined:       run container with apparmor=unconfined (without it gui doesn't work)
+	--unconfined:       run container with apparmor=unconfined 
 	--escape-selinux:   run container with label=disable (selinux)
 	--compatibility/-C:	show list of compatible images
 	--help/-h:		show this message
