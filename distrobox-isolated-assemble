@@ -61,12 +61,17 @@ unshare_process=""
 unshare_devsys=""
 unshare_home=""
 unshare_root=""
+unshare_appdirs=""
+unshare_journal=""
 unshare_all=""
 volume=""
 exported_apps=""
 exported_bins=""
 exported_bins_path="${HOME}/.local/bin"
-home_overlay_opts="-"
+overlay_home="-"
+privileged=""
+unconfined=""
+escape_selinux=""
 
 # Cleanup tmpfiles on exit
 trap 'rm -f ${tmpfile} ${tmp_download_file}' EXIT
@@ -291,12 +296,17 @@ run_distrobox()
 	unshare_devsys=""
 	unshare_home=""
 	unshare_root=""
+	unshare_appdirs=""
+	unshare_journal=""
 	unshare_all=""
 	volume=""
 	exported_apps=""
 	exported_bins=""
 	exported_bins_path="${HOME}/.local/bin"
-	home_overlay_opts="-"
+	overlay_home="-"
+	privileged=""
+	unconfined=""
+	escape_selinux=""
 
 	# Skip item if --name used and no match is found
 	if [ "${boxname}" != "" ] && [ "${boxname}" != "${name}" ]; then
@@ -387,6 +397,12 @@ run_distrobox()
 	if [ -n "${unshare_root}" ] && [ "${unshare_root}" -eq 1 ]; then
 		result_command="${result_command} --unshare-root"
 	fi
+	if [ -n "${unshare_appdirs}" ] && [ "${unshare_appdirs}" -eq 1 ]; then
+		result_command="${result_command} --unshare-appdirs"
+	fi
+	if [ -n "${unshare_journal}" ] && [ "${unshare_appdirs}" -eq 1 ]; then
+		result_command="${result_command} --unshare-journal"
+	fi
 	if [ -n "${unshare_all}" ] && [ "${unshare_all}" -eq 1 ]; then
 		result_command="${result_command} --unshare-all"
 	fi
@@ -396,8 +412,19 @@ run_distrobox()
 	if [ -n "${hostname}" ]; then
 		result_command="${result_command} --hostname $(sanitize_variable "${hostname}")"
 	fi
-	if [ "${home_overlay_opts}" != "-" ]; then
-		result_command="${result_command} --overlay-home $(sanitize_variable "${home_overlay_opts}")"
+	if [ -n "${overlay_home}" ]; then
+		result_command="${result_command} --overlay-home"
+	elif [ "${overlay_home}" != "-" ]; then
+		result_command="${result_command} --overlay-home $(sanitize_variable "${overlay_home}")"
+	fi
+	if [ -n "${privileged}" ] && [ "${privileged}" -eq 1 ]; then
+		result_command="${result_command} --privileged"
+	fi
+	if [ -n "${unconfined}" ] && [ "${unconfined}" -eq 1 ]; then
+		result_command="${result_command} --unconfined"
+	fi
+	if [ -n "${escape_selinux}" ] && [ "${escape_selinux}" -eq 1 ]; then
+	    result_command="${result_command} --escape-selinux"
 	fi
 	if [ -n "${init_hooks}" ]; then
 		IFS="¤"
